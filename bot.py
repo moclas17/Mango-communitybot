@@ -14,6 +14,30 @@ api_id = 29993447  # Make sure this is an integer, not a string
 api_hash = '6b0b83610cfaee134223ac7bfc28fd09'
 bot_token = '7602848639:AAFtfiK_GN76qZT8l3w7EIWWIDNhc5wG0W0'
 
+def score_message(message):
+    """
+    Calculate a score for a message based on its content.
+    Returns an integer score value.
+    """
+    # Skip empty messages
+    if not message or not message.strip():
+        return 0
+        
+    score = 0
+    
+    # Score based on message length (1 point per 50 characters)
+    score += len(message.strip()) // 50
+    
+    # Score for using complete sentences (ending with .!?)
+    if any(message.strip().endswith(punct) for punct in '.!?'):
+        score += 1
+    
+    # Score for message length minimum
+    if len(message.strip()) >= 10:
+        score += 1
+        
+    return max(score, 0)  # Ensure we never return negative scores
+
 async def main():
     try:
         # Initialize Telegram client
@@ -44,12 +68,12 @@ async def main():
                 username = sender.username or str(user_id)
                 message = event.raw_text
                 
-                # Only process scoring in groups
-                if event.is_group:
+                # Only process scoring in groups and skip empty messages
+                if event.is_group and message and not message.startswith('/'):
                     logger.info(f"Processing message: '{message}' from user: {username}")
                     
                     message_score = score_message(message)
-                    logger.info(f"Calculated score: {message_score}")
+                    logger.debug(f"Calculated score: {message_score} for message: '{message}'")  # Added debug logging
 
                     if message_score > 0:
                         try:
