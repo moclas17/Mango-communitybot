@@ -1,6 +1,11 @@
 from telethon import TelegramClient, events
 import sqlite3
 import logging
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Set up logging
 logging.basicConfig(
@@ -9,10 +14,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Telegram API credentials
-api_id = 29993447  # Make sure this is an integer, not a string
-api_hash = '6b0b83610cfaee134223ac7bfc28fd09'
-bot_token = '7602848639:AAFtfiK_GN76qZT8l3w7EIWWIDNhc5wG0W0'
+# Update Telegram API credentials
+api_id = int(os.getenv('API_ID'))  # Convert to int since env vars are strings
+api_hash = os.getenv('API_HASH')
+bot_token = os.getenv('BOT_TOKEN')
 
 def score_message(message):
     """
